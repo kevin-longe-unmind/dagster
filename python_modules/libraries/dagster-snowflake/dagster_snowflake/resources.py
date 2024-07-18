@@ -21,6 +21,11 @@ from dagster._model.pydantic_compat_layer import compat_model_validator
 from dagster._utils.cached_method import cached_method
 from pydantic import Field, validator
 
+from .csid import (
+    SNOWFLAKE_PARTNER_CONNECTION_IDENTIFIER,
+    SNOWFLAKE_PARTNER_CONNECTION_IDENTIFIER_SQLALCHEMY,
+)
+
 try:
     import snowflake.connector
 except ImportError:
@@ -82,6 +87,11 @@ class SnowflakeResource(ConfigurableResource, IAttachDifferentObjectToOpContext)
             "Your Snowflake account name. For more details, see the `Snowflake documentation."
             " <https://docs.snowflake.com/developer-guide/python-connector/python-connector-api>`__"
         ),
+    )
+
+    application: Optional[str] = Field(
+        default=None,
+        description=("The name of the application that is establishing the connection."),
     )
 
     user: str = Field(description="User login name.")
@@ -333,6 +343,11 @@ class SnowflakeResource(ConfigurableResource, IAttachDifferentObjectToOpContext)
         ):
             conn_args["private_key"] = self._snowflake_private_key(self._resolved_config_dict)
 
+        # Inject CSID into the connection args
+        conn_args["application"] = self._snowflake_partner_connection_identifier(
+            default=SNOWFLAKE_PARTNER_CONNECTION_IDENTIFIER
+        )
+
         return conn_args
 
     @property
@@ -353,6 +368,9 @@ class SnowflakeResource(ConfigurableResource, IAttachDifferentObjectToOpContext)
             )
             if self._resolved_config_dict.get(k) is not None
         }
+        conn_args["application"] = self._snowflake_partner_connection_identifier(
+            default=SNOWFLAKE_PARTNER_CONNECTION_IDENTIFIER_SQLALCHEMY
+        )
 
         return conn_args
 
@@ -371,6 +389,11 @@ class SnowflakeResource(ConfigurableResource, IAttachDifferentObjectToOpContext)
             sqlalchemy_engine_args["authenticator"] = config["authenticator"]
 
         return sqlalchemy_engine_args
+
+    def _snowflake_partner_connection_identifier(
+        self, default: str = SNOWFLAKE_PARTNER_CONNECTION_IDENTIFIER
+    ) -> str:
+        return self._resolved_config_dict.get("application", default)
 
     def _snowflake_private_key(self, config) -> bytes:
         # If the user has defined a path to a private key, we will use that.
@@ -456,7 +479,8 @@ class SnowflakeResource(ConfigurableResource, IAttachDifferentObjectToOpContext)
             conn.close()
             engine.dispose()
         else:
-            conn = snowflake.connector.connect(**self._connection_args)
+            conn_args = self._connection_args
+            conn = snowflake.connector.connect(**conn_args)
 
             yield conn
             if not self.autocommit:
