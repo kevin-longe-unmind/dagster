@@ -34,6 +34,7 @@ from dagster._core.definitions.resource_annotation import get_resource_args
 from dagster._core.definitions.resource_definition import ResourceDefinition
 from dagster._core.definitions.resource_requirement import (
     ResourceAddable,
+    ResourceKeyRequirement,
     ResourceRequirement,
     SourceAssetIOManagerRequirement,
     ensure_requirements_satisfied,
@@ -326,7 +327,11 @@ class SourceAsset(ResourceAddable):
 
     @property
     def required_resource_keys(self) -> AbstractSet[str]:
-        return {requirement.key for requirement in self.get_resource_requirements()}
+        return {
+            requirement.key
+            for requirement in self.get_resource_requirements()
+            if isinstance(requirement, ResourceKeyRequirement)
+        }
 
     @property
     def node_def(self) -> Optional[OpDefinition]:
