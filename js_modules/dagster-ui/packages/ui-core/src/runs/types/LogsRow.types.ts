@@ -208,6 +208,15 @@ export type LogsRowStructuredFragment_AssetCheckEvaluationPlannedEvent = {
   stepKey: string | null;
 };
 
+export type LogsRowStructuredFragment_AssetMaterializationFailureEvent = {
+  __typename: 'AssetMaterializationFailureEvent';
+  message: string;
+  eventType: Types.DagsterEventType | null;
+  timestamp: string;
+  level: Types.LogLevel;
+  stepKey: string | null;
+};
+
 export type LogsRowStructuredFragment_AssetMaterializationPlannedEvent = {
   __typename: 'AssetMaterializationPlannedEvent';
   message: string;
@@ -3000,6 +3009,7 @@ export type LogsRowStructuredFragment =
   | LogsRowStructuredFragment_AlertSuccessEvent
   | LogsRowStructuredFragment_AssetCheckEvaluationEvent
   | LogsRowStructuredFragment_AssetCheckEvaluationPlannedEvent
+  | LogsRowStructuredFragment_AssetMaterializationFailureEvent
   | LogsRowStructuredFragment_AssetMaterializationPlannedEvent
   | LogsRowStructuredFragment_EngineEvent
   | LogsRowStructuredFragment_ExecutionStepFailureEvent
@@ -3069,6 +3079,14 @@ export type LogsRowUnstructuredFragment_AssetCheckEvaluationEvent = {
 
 export type LogsRowUnstructuredFragment_AssetCheckEvaluationPlannedEvent = {
   __typename: 'AssetCheckEvaluationPlannedEvent';
+  message: string;
+  timestamp: string;
+  level: Types.LogLevel;
+  stepKey: string | null;
+};
+
+export type LogsRowUnstructuredFragment_AssetMaterializationFailureEvent = {
+  __typename: 'AssetMaterializationFailureEvent';
   message: string;
   timestamp: string;
   level: Types.LogLevel;
@@ -3353,6 +3371,7 @@ export type LogsRowUnstructuredFragment =
   | LogsRowUnstructuredFragment_AlertSuccessEvent
   | LogsRowUnstructuredFragment_AssetCheckEvaluationEvent
   | LogsRowUnstructuredFragment_AssetCheckEvaluationPlannedEvent
+  | LogsRowUnstructuredFragment_AssetMaterializationFailureEvent
   | LogsRowUnstructuredFragment_AssetMaterializationPlannedEvent
   | LogsRowUnstructuredFragment_EngineEvent
   | LogsRowUnstructuredFragment_ExecutionStepFailureEvent

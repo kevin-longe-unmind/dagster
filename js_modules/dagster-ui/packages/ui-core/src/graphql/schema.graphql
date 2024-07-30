@@ -64,6 +64,7 @@ enum DagsterEventType {
   STEP_EXPECTATION_RESULT
   ASSET_CHECK_EVALUATION_PLANNED
   ASSET_CHECK_EVALUATION
+  ASSET_MATERIALIZATION_FAILURE
   RUN_ENQUEUED
   RUN_DEQUEUED
   RUN_STARTING
@@ -1211,6 +1212,7 @@ union DagsterRunEvent =
   | AlertSuccessEvent
   | AlertFailureEvent
   | AssetMaterializationPlannedEvent
+  | AssetMaterializationFailureEvent
   | AssetCheckEvaluationPlannedEvent
   | AssetCheckEvaluationEvent
 
@@ -1262,6 +1264,18 @@ type AlertFailureEvent implements MessageEvent & RunEvent {
   solidHandleID: String
   eventType: DagsterEventType
   pipelineName: String!
+}
+
+type AssetMaterializationFailureEvent implements MessageEvent & RunEvent {
+  runId: String!
+  message: String!
+  timestamp: String!
+  level: LogLevel!
+  stepKey: String
+  solidHandleID: String
+  eventType: DagsterEventType
+  pipelineName: String!
+  assetKey: AssetKey
 }
 
 type AssetCheckEvaluationPlannedEvent implements MessageEvent & StepEvent {
