@@ -1,7 +1,7 @@
 from dagster._core.definitions.asset_key import AssetKey
 from dagster._core.definitions.asset_spec import AssetSpec
 from dagster_powerbi import DagsterPowerBITranslator
-from dagster_powerbi.translator import PowerBIWorkspaceData
+from dagster_powerbi.translator import PowerBIContentData, PowerBIWorkspaceData
 
 
 def test_translator_dashboard_spec(workspace_data: PowerBIWorkspaceData) -> None:
