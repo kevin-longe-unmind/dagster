@@ -2,6 +2,7 @@ import base64
 import json
 import os
 import random
+import signal
 import string
 import time
 from contextlib import contextmanager
@@ -460,6 +461,7 @@ class PipesGlueClient(PipesClient, TreatAsResourceParam):
                 "LogGroupName"
             ]
             context.log.info(f"Started AWS Glue job {job_name} run: {run_id}")
+            self._register_interruption_handler(context, job_name=job_name, run_id=run_id)
 
             response = self._wait_for_job_run_completion(job_name, run_id)
 
@@ -485,23 +487,23 @@ class PipesGlueClient(PipesClient, TreatAsResourceParam):
                 return response
             time.sleep(5)
 
-    def _register_interruption_handler(self, context: OpExecutionContext, job_name: str, run_id: str):
-        """
-        Creates a handler which will gracefully stop the Run in case of external termination.
+    def _register_interruption_handler(
+        self, context: OpExecutionContext, job_name: str, run_id: str
+    ):
+        """Creates a handler which will gracefully stop the Run in case of external termination.
         It will stop the Glue job before doing so.
         """
 
         def handler(signum, frame):
             context.log.warning(f"Dagster run interrupted! Stopping Glue job run {run_id}...")
-            response = self._client.batch_stop_job_run(
-                JobName=job_name,
-                JobRunIds=[run_id]
-            )
+            response = self._client.batch_stop_job_run(JobName=job_name, JobRunIds=[run_id])
             runs = response["SuccessfulSubmissions"]
             if len(runs) > 0:
                 context.log.warning(f"Successfully stopped Glue job run {run_id}.")
             else:
-                context.log.warning(f"Something went wrong during run termination: {response['errors']}")
+                context.log.warning(
+                    f"Something went wrong during run termination: {response['errors']}"
+                )
 
             raise KeyboardInterrupt
 
