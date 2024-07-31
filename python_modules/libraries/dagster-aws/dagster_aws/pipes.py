@@ -484,3 +484,25 @@ class PipesGlueClient(PipesClient, TreatAsResourceParam):
             if response["JobRun"]["JobRunState"] in ["FAILED", "SUCCEEDED"]:
                 return response
             time.sleep(5)
+
+    def _register_interruption_handler(self, context: OpExecutionContext, job_name: str, run_id: str):
+        """
+        Creates a handler which will gracefully stop the Run in case of external termination.
+        It will stop the Glue job before doing so.
+        """
+
+        def handler(signum, frame):
+            context.log.warning(f"Dagster run interrupted! Stopping Glue job run {run_id}...")
+            response = self._client.batch_stop_job_run(
+                JobName=job_name,
+                JobRunIds=[run_id]
+            )
+            runs = response["SuccessfulSubmissions"]
+            if len(runs) > 0:
+                context.log.warning(f"Successfully stopped Glue job run {run_id}.")
+            else:
+                context.log.warning(f"Something went wrong during run termination: {response['errors']}")
+
+            raise KeyboardInterrupt
+
+        signal.signal(signal.SIGINT, handler)
