@@ -350,7 +350,7 @@ class PipesGlueClient(PipesClient, TreatAsResourceParam):
     Args:
         context_injector (Optional[PipesContextInjector]): A context injector to use to inject
             context into the Glue job, for example, :py:class:`PipesGlueContextInjector`.
-        message_reader (Optional[PipesMessageReader]): A message reader to use to read messages
+        message_reader (Optional[PipesGlueMessageReader]): A message reader to use to read messages
             from the glue job run. Defaults to :py:class:`PipesGlueLogsMessageReader`.
         client (Optional[boto3.client]): The boto Glue client used to launch the Glue job
     """
