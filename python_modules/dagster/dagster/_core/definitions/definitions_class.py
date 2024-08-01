@@ -649,6 +649,12 @@ class Definitions(IHaveNew):
         Raises an error if the Definitions objects to be merged contain conflicting values for the
         same resource key or logger key, or if they have different executors defined.
 
+        .. code-block:: python
+            import submodule1
+            import submodule2
+
+            defs = Definitions.merge(submodule1.defs, submodule2.defs)
+
         Returns:
             Definitions: The merged definitions.
         """
