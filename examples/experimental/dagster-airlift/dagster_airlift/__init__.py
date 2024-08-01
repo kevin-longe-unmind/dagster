@@ -7,3 +7,4 @@ from .airflow_utils import (
     assets_defs_from_airflow_instance as assets_defs_from_airflow_instance,
     build_airflow_polling_sensor as build_airflow_polling_sensor,
 )
+from .within_airflow import mark_as_dagster_migrating as mark_as_dagster_migrating
