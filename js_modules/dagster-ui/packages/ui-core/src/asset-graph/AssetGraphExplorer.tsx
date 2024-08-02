@@ -105,7 +105,7 @@ export const AssetGraphExplorer = (props: Props) => {
 
   const {explorerPath, onChangeExplorerPath} = props;
 
-  const {button, filterBar, computeKindTagsFilter, storageKindTagsFilter} =
+  const {button, filterBar, computeKindTagsFilter} =
     useAssetGraphExplorerFilters({
       nodes: React.useMemo(
         () => (fullAssetGraphData ? Object.values(fullAssetGraphData.nodes) : []),
@@ -154,7 +154,6 @@ export const AssetGraphExplorer = (props: Props) => {
             filterBar={filterBar}
             filterButton={button}
             computeKindTagsFilter={computeKindTagsFilter}
-            storageKindTagsFilter={storageKindTagsFilter}
             {...props}
           />
         );
@@ -174,7 +173,6 @@ type WithDataProps = Props & {
   isGlobalGraph?: boolean;
   trace?: PageLoadTrace;
   computeKindTagsFilter?: StaticSetFilter<string>;
-  storageKindTagsFilter?: StaticSetFilter<DefinitionTag>;
 };
 
 const AssetGraphExplorerWithData = ({
@@ -192,7 +190,6 @@ const AssetGraphExplorerWithData = ({
   filterBar,
   assetFilterState,
   isGlobalGraph = false,
-  storageKindTagsFilter,
   computeKindTagsFilter,
   trace,
 }: WithDataProps) => {
@@ -634,7 +631,6 @@ const AssetGraphExplorerWithData = ({
                         definition={graphNode.definition}
                         selected={selectedGraphNodes.includes(graphNode)}
                         computeKindTagsFilter={computeKindTagsFilter}
-                        storageKindTagsFilter={storageKindTagsFilter}
                       />
                     </AssetNodeContextMenuWrapper>
                   )}
